@@ -9,28 +9,37 @@ from passlib.context import CryptContext
 
 router = APIRouter()
 
-
-bcrypt_context = CryptContext(
-    schemes=["bcrypt"],
-    deprecated="auto"
-)
+bcrypt_context = CryptContext(schemes=["bcrypt"],deprecated="auto")
 
 db = Sessionlocal()
 
-admin = Users(
-    name="Admin",
-    email="admin@gmail.com",
-    username="admin",
-    hash_password=bcrypt_context.hash("Admin@123"),
-    phone="01700000000",
-    gender="male",
-    is_active=True,
-    role="admin"
-)
+existing_admin = db.query(Users).filter(Users.email == "admin@gmail.com").first()
 
-db.add(admin)
-db.commit()
-db.refresh(admin)
+if existing_admin:
+    existing_admin.role = "admin"
+    existing_admin.is_active = True
+    db.commit()
+
+    print("Existing user promoted to admin")
+
+else:
+    admin = Users(
+        name="Admin",
+        email="admin@gmail.com",
+        username="admin",
+        hash_password=bcrypt_context.hash("Admin@123"),
+        phone="01700000000",
+        gender="male",
+        is_active=True,
+        role="admin"
+    )
+
+    db.add(admin)
+    db.commit()
+
+    print("Admin created successfully")
+
+db.close()
 
 def check_admin(user):
     if user["role"] != "admin":
