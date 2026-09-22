@@ -68,7 +68,6 @@ class User(BaseModel):
     password : str
     phone : str
     gender : str
-    role : str
 
 class updated_user(BaseModel):
     email : Optional[str] = Field(default=None)
@@ -105,7 +104,7 @@ def create_users(db : db_dependency, new_user : User):
         phone = new_user.phone,
         gender = new_user.gender,
         is_active = True,
-        role = new_user.role
+        role = "user"
     )
     
     db.add(user_model)

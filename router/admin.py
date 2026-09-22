@@ -1,13 +1,36 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from typing import Optional
-
+from database import Sessionlocal
 from models import Users, Donors, BloodRequest, Donation
 from router.auth import db_dependency, user_dependency
+from passlib.context import CryptContext
 
 
 router = APIRouter()
 
+
+bcrypt_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto"
+)
+
+db = Sessionlocal()
+
+admin = Users(
+    name="Admin",
+    email="admin@gmail.com",
+    username="admin",
+    hash_password=bcrypt_context.hash("Admin@123"),
+    phone="01700000000",
+    gender="male",
+    is_active=True,
+    role="admin"
+)
+
+db.add(admin)
+db.commit()
+db.refresh(admin)
 
 def check_admin(user):
     if user["role"] != "admin":
