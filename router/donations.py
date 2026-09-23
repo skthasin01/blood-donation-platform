@@ -29,7 +29,7 @@ def donation_create(user: user_dependency,db:db_dependency,new_donation : Donati
     if user is None:
         raise HTTPException(status_code=401, detail="Failed Authentication")
 
-    donor = db.query(Users).filter(Users.id == new_donation.donor_id).first()
+    donor = db.query(Donors).filter(Donors.id == new_donation.donor_id).first()
     if donor is None:
         raise HTTPException(status_code=404, detail="Donor not found")
     
