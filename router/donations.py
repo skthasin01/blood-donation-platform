@@ -64,8 +64,11 @@ def view_donations(user:user_dependency,db:db_dependency):
 def my_donations(user:user_dependency,db:db_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail="Failed Authentication")
-    donation = db.query(Donation).filter(Donation.user_id == user['id']).all()  
+
+    donation = db.query(Donation).filter(Donation.donor_id == user['id']).all()
+
     return donation
+
 
 @router.get('/donations/{donation_id}')
 def view_specific_donations(user:user_dependency,db:db_dependency,donation_id : int):
