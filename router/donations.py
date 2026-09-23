@@ -12,12 +12,14 @@ from router.auth import db_dependency, user_dependency
 router = APIRouter()
 
 class DonationCreate(BaseModel):
+    donor_id: int = Field(..., gt=0, description="Donor ID must be a positive integer")
     blood_request_id: int = Field(..., gt=0, description="Blood request ID must be a positive integer")
     donation_date: Optional[datetime] = Field(default=None, description="Date of donation")
     units_donated: int = Field(..., gt=0, description="Units donated must be greater than 0")
 
 
 class DonationUpdate(BaseModel):
+    donor_id: Optional[int] = Field( gt=0, default=None)
     blood_request_id: Optional[int] = Field(default=None, gt=0)
     donation_date: Optional[datetime] = None
     units_donated: Optional[int] = Field(default=None, gt=0)
@@ -62,8 +64,11 @@ def view_donations(user:user_dependency,db:db_dependency):
 def my_donations(user:user_dependency,db:db_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail="Failed Authentication")
+    donor = db.query(Donors).filter( Donors.user_id == user["id"] ).first()
+    if donor is None: 
+        raise HTTPException( status_code=404, detail="Donor profile not found" )
 
-    donation = db.query(Donation).filter(Donation.donor_id == user['id']).all()
+    donation = db.query(Donation).filter(Donation.donor_id == donor.id).all()
 
     return donation
 
