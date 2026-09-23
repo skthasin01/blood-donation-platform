@@ -19,7 +19,7 @@ class DonationCreate(BaseModel):
 
 
 class DonationUpdate(BaseModel):
-    donor_id: Optional[int] = Field( gt=0, default=None)
+    donor_id: Optional[int] = Field(default=None, gt=0)
     blood_request_id: Optional[int] = Field(default=None, gt=0)
     donation_date: Optional[datetime] = None
     units_donated: Optional[int] = Field(default=None, gt=0)
@@ -37,7 +37,7 @@ def donation_create(user: user_dependency,db:db_dependency,new_donation : Donati
     if blood_r is None:
         raise HTTPException(status_code=400,detail="Blood request not found")
     donation = Donation(
-        donor_id=user['id'],
+        donor_id=donor.id,
         blood_request_id=new_donation.blood_request_id,
         donation_date=(
             new_donation.donation_date
@@ -50,7 +50,7 @@ def donation_create(user: user_dependency,db:db_dependency,new_donation : Donati
     db.add(donation)
     db.commit()
     db.refresh(donation)
-    return JSONResponse(status_code=201, content={"message": "Donation created successfully"})
+    return JSONResponse(status_code=201, content={"message": "Donation created successfully","donation_id": donation.id})
 
 
 @router.get('/donations/all')
