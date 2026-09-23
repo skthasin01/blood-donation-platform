@@ -128,7 +128,7 @@ def get_specific_blood_request(user: user_dependency,db : db_dependency,request_
     return blood_r
 
 @router.get('/blood-request/my')
-def get_specific_blood_request(user: user_dependency,db : db_dependency):
+def get_my_blood_request(user: user_dependency,db : db_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail="Failed Authentication")
 
