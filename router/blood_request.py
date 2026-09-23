@@ -103,6 +103,15 @@ def get_blood_requests(
 
     if sort not in sort_fields:
         raise HTTPException(status_code=400, detail=f"Invalid sort option: {sort}")
+        
+    if sort == "newest": 
+        query = query.order_by( BloodRequest.created_at.desc() )
+    elif sort == "oldest": 
+        query = query.order_by( BloodRequest.created_at.asc() )
+    elif sort == "hospital_name": 
+        query = query.order_by( BloodRequest.hospital_name.asc() )
+    elif sort == "units": 
+        query = query.order_by( BloodRequest.units_required.asc() )
 
     total = query.count()
     skip = (page - 1) * page_size
