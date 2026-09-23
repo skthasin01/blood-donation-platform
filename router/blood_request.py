@@ -127,6 +127,15 @@ def get_specific_blood_request(user: user_dependency,db : db_dependency,request_
         raise HTTPException(status_code=404,detail="Blood request not found")
     return blood_r
 
+@router.get('/blood-request/my')
+def get_specific_blood_request(user: user_dependency,db : db_dependency):
+    if user is None:
+        raise HTTPException(status_code=401, detail="Failed Authentication")
+
+    blood_r = db.query(BloodRequest).filter(BloodRequest.user_id == user['id']).all()
+    if blood_r is None:
+        raise HTTPException(status_code=404,detail="Blood request not found")
+    return blood_r
 
 @router.put('/blood-request/update/{request_id}')
 def update_blood_request(user: user_dependency,db : db_dependency,request_id : int,request_data : BloodRequestUpdate):
