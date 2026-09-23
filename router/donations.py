@@ -60,6 +60,13 @@ def view_donations(user:user_dependency,db:db_dependency):
     donation = db.query(Donation).all()
     return donation
 
+@router.get('/donations/my')
+def my_donations(user:user_dependency,db:db_dependency):
+    if user is None:
+        raise HTTPException(status_code=401, detail="Failed Authentication")
+    donation = db.query(Donation).filter(Donation.user_id == user['id']).all()  
+    return donation
+
 @router.get('/donations/{donation_id}')
 def view_specific_donations(user:user_dependency,db:db_dependency,donation_id : int):
     if user is None:
@@ -69,7 +76,6 @@ def view_specific_donations(user:user_dependency,db:db_dependency,donation_id : 
         raise HTTPException(status_code=404,detail="Donation not Found!!")
     
     return donation
-
 
 @router.put("/donations/update/{donation_id}")
 def donation_update(user: user_dependency,db:db_dependency,donation_data : DonationUpdate,donation_id : int):
